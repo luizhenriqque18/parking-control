@@ -25,4 +25,18 @@ public class SecurityConfiguration {
 
         return http.build();
     }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService () {
+        UserDetails userDetails =  User.withUsername("katros")
+                .password(passwordEncoder().encode("ktr1234")) //There is no PasswordEncoder mapped for the id "null", return type BCryptPasswordEncoder
+                .roles("ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(userDetails);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }
