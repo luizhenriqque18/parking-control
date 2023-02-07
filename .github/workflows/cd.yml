@@ -20,3 +20,25 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ secrets.DOCKER_USERNAME }}/parking-control
           tags: ${{ github.sha }}, latest
+
+  deploy_heroku:
+    name: Deploy Heroku
+    runs-on: ubuntu-latest
+    needs: [build]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{vars.HEROKU_APP_NAME}}
+          heroku_email: ${{vars.HEROKU_EMAIL}}
+          usedocker: true
+          docker_build_args: |
+            HD_SPRING_DATASOURCE_URL
+            HD_SPRING_DATASOURCE_USERNAME
+            HD_SPRING_DATASOURCE_PASSWORD
+        env:
+          HD_SPRING_DATASOURCE_URL: ${{vars.S_DB_URL}}
+          HD_SPRING_DATASOURCE_USERNAME: ${{secrets.S_DB_USERNAME}}
+          HD_SPRING_DATASOURCE_PASSWORD: ${{secrets.S_DB_PASSWORD}}
